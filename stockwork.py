@@ -57,18 +57,24 @@ def generate_stock_summary(stock_name):
 
             # Extract the text response from OpenAI
             factors_text = response.choices[0].text.strip()
-            st.markdown(factors_text)
-
-            # Convert the response into a structured format (e.g., list of dictionaries)
             factors_list = []
             for factor in factors_text.split("\n"):
                 if factor:
                     factor_name, _, description = factor.partition(":")
                     factors_list.append({"Factor": factor_name.strip(), "Description": description.strip()})
 
+            # Order factors by importance (placeholder logic - actual ranking can be added based on additional analysis)
+            factors_list = sorted(factors_list, key=lambda x: len(x['Description']), reverse=True)
+
             # Store factors in a pandas DataFrame
             factors_df = pd.DataFrame(factors_list)
             st.write(factors_df)
+
+            # Display the factors in a clear and concise manner
+            st.header("Step 1: Factors Influencing Stock Price")
+            st.markdown("Below are the key factors influencing the stock price of the company, listed in order of importance:")
+            for idx, factor in enumerate(factors_list, start=1):
+                st.markdown(f"**{idx}. {factor['Factor']}**: {factor['Description']}")
 
             # Return the factors DataFrame for future use
             return factors_df
