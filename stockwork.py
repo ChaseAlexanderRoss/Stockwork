@@ -1,11 +1,9 @@
-Sure thing! Below is the Python code framework that mirrors our existing project plan for the stock predictor app. The code includes functions, placeholders, and comments that align with the structure we discussed, using the code style from your earlier sample.
-
-```python
 import streamlit as st
 import pandas as pd
 import yfinance as yf  # For retrieving financial data
 import numpy as np
 import openai
+import os
 
 # Step 1: Ensure Required Libraries are Installed
 try:
@@ -13,6 +11,9 @@ try:
     import seaborn as sns
 except ModuleNotFoundError:
     st.error("Please install the required libraries: matplotlib, seaborn.")
+
+# Set OpenAI API Key (replace with your actual API key)
+openai.api_key = st.secrets["OPENAI_API_KEY"]
 
 # Step 2: App Title and Description
 st.title("Stock Prediction Analysis")
@@ -32,25 +33,57 @@ def get_user_inputs():
     duration = st.number_input("Enter the time duration (in years) for prediction:", min_value=1, max_value=10, value=1)
     return stock_name, duration
 
-# Step 4: Stock Summary Analysis Placeholder
+# Step 4: Retrieve Important Factors using OpenAI API
 def generate_stock_summary(stock_name):
     """
-    Placeholder function for generating a detailed stock summary.
+    Uses the OpenAI API to generate a list of significant factors affecting the stock price of the given company.
     The summary includes recent financial performance, market trends, significant news, etc.
     """
     if stock_name:
         st.header("Stock Summary Analysis")
-        st.markdown(f"Generating a detailed summary for {stock_name}...")
-        # Placeholder for OpenAI API call or other analysis to provide insights
-        st.markdown("\n*Recent financial performance, market trends, news events, and industry developments will be displayed here.*")
+        try:
+            # Construct the prompt to retrieve key factors influencing the stock price
+            prompt = (
+                f"Identify the key factors influencing the stock price of {stock_name}. Include aspects such as financial performance, market trends, industry news, economic indicators, regulatory changes, and any other relevant information."
+            )
+
+            # Make the OpenAI API call
+            response = openai.Completion.create(
+                engine="text-davinci-003",
+                prompt=prompt,
+                max_tokens=300,
+                temperature=0.7
+            )
+
+            # Extract the text response from OpenAI
+            factors_text = response.choices[0].text.strip()
+            st.markdown(factors_text)
+
+            # Convert the response into a structured format (e.g., list of dictionaries)
+            factors_list = []
+            for factor in factors_text.split("\n"):
+                if factor:
+                    factor_name, _, description = factor.partition(":")
+                    factors_list.append({"Factor": factor_name.strip(), "Description": description.strip()})
+
+            # Store factors in a pandas DataFrame
+            factors_df = pd.DataFrame(factors_list)
+            st.write(factors_df)
+
+            # Return the factors DataFrame for future use
+            return factors_df
+
+        except Exception as e:
+            st.error(f"Error retrieving factors from OpenAI API: {e}")
+            return pd.DataFrame()
 
 # Step 5: Automatically Generate Factors
 def generate_factors(stock_name, duration):
     """
     Generates factors for predicting the stock price based on user inputs.
     """
-    st.header("Step 1: Identify Factors")
-    st.markdown(f"Identifying the key factors for predicting the stock price of {stock_name} over {duration} year(s).")
+    st.header("Step 2: Identify Additional Factors")
+    st.markdown(f"Identifying additional key factors for predicting the stock price of {stock_name} over {duration} year(s).")
 
     # Retrieve stock data using yfinance
     stock = yf.Ticker(stock_name)
@@ -96,7 +129,7 @@ def assign_ratings_and_importance(factor_list, duration):
     """
     Assigns ratings, confidence levels, and importance values to factors.
     """
-    st.header("Step 2: Automatically Assign Ratings, Confidence Levels, and Importance")
+    st.header("Step 3: Automatically Assign Ratings, Confidence Levels, and Importance")
     ratings = []
     confidence_levels = []
     importance_values = []
@@ -125,11 +158,11 @@ def display_factors_table(factors_table):
     """
     Displays the factors table and visualizes importance and confidence levels.
     """
-    st.header("Step 3: Factors Table")
+    st.header("Step 4: Factors Table")
     st.write(factors_table)
 
     # Placeholder for visualization
-    st.header("Step 4: Visualization of Factors")
+    st.header("Step 5: Visualization of Factors")
     st.markdown("Visualize the importance and confidence levels of the factors.")
     # Visualization will be added later
 
@@ -138,7 +171,7 @@ def critique_analysis(factors_table):
     """
     Allows the user to critique and make adjustments to the factors.
     """
-    st.header("Step 5: Critique the Analysis")
+    st.header("Step 6: Critique the Analysis")
     st.markdown("Review the table and make adjustments if needed.")
     # Display an editable version of the factors table
     edited_table = st.dataframe(factors_table)
@@ -149,7 +182,7 @@ def make_prediction(stock_name, duration):
     """
     Allows the user to input a prediction for the annualized rate of return.
     """
-    st.header("Step 6: Make a Prediction")
+    st.header("Step 7: Make a Prediction")
     st.markdown("Based on the data in the table, make a prediction for the annualized rate of return.")
     predicted_return = st.number_input(
         "Enter your prediction for the annualized rate of return (%):",
@@ -166,19 +199,15 @@ def main():
     """
     stock_name, duration = get_user_inputs()
     if stock_name:
-        generate_stock_summary(stock_name)
-        factor_list = generate_factors(stock_name, duration)
-        if factor_list:
-            factors_table = assign_ratings_and_importance(factor_list, duration)
+        factors_df = generate_stock_summary(stock_name)
+        additional_factors = generate_factors(stock_name, duration)
+        if additional_factors:
+            factors_df = pd.concat([factors_df, pd.DataFrame({"Factor": additional_factors})], ignore_index=True)
+            factors_table = assign_ratings_and_importance(factors_df["Factor"].tolist(), duration)
             display_factors_table(factors_table)
             edited_table = critique_analysis(factors_table)
             make_prediction(stock_name, duration)
 
 if __name__ == "__main__":
     main()
-```
-
-This code structure mirrors our project framework, maintaining the overall flow while including placeholders for future development. Each step has a corresponding function, and placeholders are used where more detailed implementation will follow.
-
-Let me know if this aligns with your expectations or if you'd like to adjust anything!
 
