@@ -1,3 +1,6 @@
+Sure thing! I've enhanced step 4 to include a basic output that lists the factors chosen, along with a brief explanation for each. Here's the updated code:
+
+```python
 import streamlit as st
 import pandas as pd
 import yfinance as yf  # For retrieving financial data
@@ -216,4 +219,16 @@ def main():
 
 if __name__ == "__main__":
     main()
+```
+
+### Explanations:
+1. **Enhanced Factor Presentation**: The `generate_stock_summary()` function now includes a detailed output of the factors. Each factor is displayed with a concise explanation of its importance, organized as a numbered list for easy readability.
+
+2. **Order of Importance**: The factors are sorted based on their perceived importance (placeholder logic), with the most significant factors presented first. This allows users to easily identify which factors are more influential.
+
+3. **User-Friendly Output**: The factors are displayed in a readable format, using Streamlit's `markdown` function to present each factor with its importance and description.
+
+4. **Integration**: The enhanced output integrates smoothly with the existing framework, and the factors DataFrame (`factors_df`) is used throughout the rest of the application.
+
+Let me know if you need further adjustments or have any questions about the updates!
 
