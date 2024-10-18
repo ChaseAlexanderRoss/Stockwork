@@ -6,21 +6,21 @@ import os
 
 # Step 1.1: Ensure OpenAI Library is Installed
 try:
-    import openai
+    from openai import OpenAI
 except ModuleNotFoundError:
     st.error("Please install the required library: openai.")
     raise
 
 # Step 1.2: API Version Detection
 try:
-    openai_version = openai.__version__
+    openai_version = OpenAI.__version__
     st.write(f"Using OpenAI API version: {openai_version}")
 except AttributeError:
     st.error("Unable to detect OpenAI API version. Please ensure the library is installed correctly.")
     raise
 
 # Set OpenAI API Key (replace with your actual API key)
-openai.api_key = st.secrets["OPENAI_API_KEY"]
+client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
 
 # Step 2: App Title and Description
 st.title("Stock Prediction Analysis")
@@ -54,27 +54,15 @@ def generate_stock_summary(stock_name):
                 f"Identify the key factors influencing the stock price of {stock_name}. Include aspects such as financial performance, market trends, industry news, economic indicators, regulatory changes, and any other relevant information."
             )
 
-            # Check OpenAI API version and adjust syntax accordingly
-            if openai_version.startswith("0") or openai_version.startswith("1"):
-                # Assuming version 0.x or 1.x uses the older syntax
-                response = openai.ChatCompletion.create(
-                    model="gpt-3.5-turbo",
-                    messages=[
-                        {"role": "user", "content": prompt}
-                    ],
-                    max_tokens=300,
-                    temperature=0.7
-                )
-            else:
-                # Assuming future versions use updated syntax (hypothetical example)
-                response = openai.ChatCompletion.create(
-                    model="gpt-3.5-turbo",
-                    messages=[
-                        {"role": "user", "content": prompt}
-                    ],
-                    max_tokens=300,
-                    temperature=0.7
-                )
+            # Use the new gpt-4o model for the API call
+            response = client.completions.create(
+                model="gpt-4o",
+                messages=[
+                    {"role": "user", "content": prompt}
+                ],
+                max_tokens=300,
+                temperature=0.7
+            )
 
             # Extract the text response from OpenAI
             factors_text = response.choices[0].message['content'].strip()
