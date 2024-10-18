@@ -58,7 +58,7 @@ def generate_stock_summary(stock_name):
             )
 
             # Extract the text response from OpenAI
-            factors_text = response.choices[0].message['content'].strip()
+            factors_text = response.choices[0].message.content.strip()
             factors_list = []
             for factor in factors_text.split("\n"):
                 if factor:
@@ -221,5 +221,4 @@ def main():
 
 if __name__ == "__main__":
     main()
-
 
