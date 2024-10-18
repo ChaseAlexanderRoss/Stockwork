@@ -57,23 +57,27 @@ def generate_stock_summary(stock_name):
             # Check OpenAI API version and adjust syntax accordingly
             if openai_version.startswith("0") or openai_version.startswith("1"):
                 # Assuming version 0.x or 1.x uses the older syntax
-                response = openai.Completion.create(
-                    engine="text-davinci-003",
-                    prompt=prompt,
+                response = openai.ChatCompletion.create(
+                    model="gpt-3.5-turbo",
+                    messages=[
+                        {"role": "user", "content": prompt}
+                    ],
                     max_tokens=300,
                     temperature=0.7
                 )
             else:
                 # Assuming future versions use updated syntax (hypothetical example)
-                response = openai.Completion.create(
-                    model="text-davinci-003",
-                    prompt=prompt,
+                response = openai.ChatCompletion.create(
+                    model="gpt-3.5-turbo",
+                    messages=[
+                        {"role": "user", "content": prompt}
+                    ],
                     max_tokens=300,
                     temperature=0.7
                 )
 
             # Extract the text response from OpenAI
-            factors_text = response.choices[0].text.strip()
+            factors_text = response.choices[0].message['content'].strip()
             factors_list = []
             for factor in factors_text.split("\n"):
                 if factor:
@@ -236,5 +240,4 @@ def main():
 
 if __name__ == "__main__":
     main()
-
 
