@@ -11,6 +11,7 @@ except ModuleNotFoundError:
     st.error("Please install the required library: openai.")
     raise
 
+
 # Set OpenAI API Key (replace with your actual API key)
 client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
 
@@ -49,15 +50,13 @@ def generate_stock_summary(stock_name):
             # Use the new gpt-4o model for the API call
             response = client.completions.create(
                 model="gpt-4o",
-                messages=[
-                    {"role": "user", "content": prompt}
-                ],
+                prompt=prompt,
                 max_tokens=300,
                 temperature=0.7
             )
 
             # Extract the text response from OpenAI
-            factors_text = response.choices[0].message['content'].strip()
+            factors_text = response.choices[0].text.strip()
             factors_list = []
             for factor in factors_text.split("\n"):
                 if factor:
