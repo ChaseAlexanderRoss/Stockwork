@@ -60,8 +60,11 @@ def generate_stock_summary(stock_name):
             factors_list = []
             for factor in factors_text.split("\n"):
                 if factor:
-                    factor_name, _, description = factor.partition(":")
-                    factors_list.append({"Factor": factor_name.strip(), "Description": description.strip()})
+                    if ":" in factor:
+                        factor_name, description = factor.split(":", 1)
+                        factors_list.append({"Factor": factor_name.strip(), "Description": description.strip()})
+                    else:
+                        factors_list.append({"Factor": factor.strip(), "Description": "No description available."})
 
             # Order factors by importance (placeholder logic - actual ranking can be added based on additional analysis)
             factors_list = sorted(factors_list, key=lambda x: len(x['Description']), reverse=True)
@@ -216,3 +219,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
