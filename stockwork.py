@@ -2,15 +2,22 @@ import streamlit as st
 import pandas as pd
 import yfinance as yf  # For retrieving financial data
 import numpy as np
-import openai
 import os
 
-# Step 1: Ensure Required Libraries are Installed
+# Step 1.1: Ensure OpenAI Library is Installed
 try:
-    import matplotlib.pyplot as plt
-    import seaborn as sns
+    import openai
 except ModuleNotFoundError:
-    st.error("Please install the required libraries: matplotlib, seaborn.")
+    st.error("Please install the required library: openai.")
+    raise
+
+# Step 1.2: API Version Detection
+try:
+    openai_version = openai.__version__
+    st.write(f"Using OpenAI API version: {openai_version}")
+except AttributeError:
+    st.error("Unable to detect OpenAI API version. Please ensure the library is installed correctly.")
+    raise
 
 # Set OpenAI API Key (replace with your actual API key)
 openai.api_key = st.secrets["OPENAI_API_KEY"]
@@ -47,13 +54,23 @@ def generate_stock_summary(stock_name):
                 f"Identify the key factors influencing the stock price of {stock_name}. Include aspects such as financial performance, market trends, industry news, economic indicators, regulatory changes, and any other relevant information."
             )
 
-            # Make the OpenAI API call
-            response = openai.Completion.create(
-                engine="text-davinci-003",
-                prompt=prompt,
-                max_tokens=300,
-                temperature=0.7
-            )
+            # Check OpenAI API version and adjust syntax accordingly
+            if openai_version.startswith("0") or openai_version.startswith("1"):
+                # Assuming version 0.x or 1.x uses the older syntax
+                response = openai.Completion.create(
+                    engine="text-davinci-003",
+                    prompt=prompt,
+                    max_tokens=300,
+                    temperature=0.7
+                )
+            else:
+                # Assuming future versions use updated syntax (hypothetical example)
+                response = openai.Completion.create(
+                    model="text-davinci-003",
+                    prompt=prompt,
+                    max_tokens=300,
+                    temperature=0.7
+                )
 
             # Extract the text response from OpenAI
             factors_text = response.choices[0].text.strip()
