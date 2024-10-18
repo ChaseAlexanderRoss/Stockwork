@@ -48,17 +48,15 @@ def generate_stock_summary(stock_name):
             )
 
             # Use the new gpt-4o model for the API call
-            response = client.chat_completions.create(
+            response = client.completions.create(
                 model="gpt-4o",
-                messages=[
-                    {"role": "user", "content": prompt}
-                ],
+                prompt=prompt,
                 max_tokens=300,
                 temperature=0.7
             )
 
             # Extract the text response from OpenAI
-            factors_text = response.choices[0].message['content'].strip()
+            factors_text = response.choices[0].text.strip()
             factors_list = []
             for factor in factors_text.split("\n"):
                 if factor:
