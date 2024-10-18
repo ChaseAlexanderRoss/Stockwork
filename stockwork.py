@@ -48,7 +48,7 @@ def generate_stock_summary(stock_name):
             )
 
             # Use the new gpt-4o model for the API call
-            response = client.completions.create(
+            response = client.chat.completions.create(
                 model="gpt-4o",
                 prompt=prompt,
                 max_tokens=300,
