@@ -11,14 +11,6 @@ except ModuleNotFoundError:
     st.error("Please install the required library: openai.")
     raise
 
-# Step 1.2: API Version Detection
-try:
-    openai_version = OpenAI.__version__
-    st.write(f"Using OpenAI API version: {openai_version}")
-except AttributeError:
-    st.error("Unable to detect OpenAI API version. Please ensure the library is installed correctly.")
-    raise
-
 # Set OpenAI API Key (replace with your actual API key)
 client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
 
