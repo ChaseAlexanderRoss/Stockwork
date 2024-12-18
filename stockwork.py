@@ -73,8 +73,7 @@ def generate_stock_summary(stock_name):
 
             # Store factors in a pandas DataFrame
             factors_df = pd.DataFrame(factors_list)
-            # Making raw fetch results private
-            # st.write(factors_df)  # Original line now commented out for privacy
+            st.write(factors_df)
 
             # Display the factors in a clear and concise manner
             st.header("Step 1: Factors Influencing Stock Price")
@@ -222,5 +221,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-    main()
-
