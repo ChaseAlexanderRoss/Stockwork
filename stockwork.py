@@ -79,7 +79,7 @@ def generate_stock_summary(stock_name):
             st.header("Step 1: Factors Influencing Stock Price")
             st.markdown("Below are the key factors influencing the stock price of the company, listed in order of importance:")
             for idx, factor in enumerate(factors_list, start=1):
-                st.markdown(f"**{idx}. {factor['Factor']}**: {factor['Description']}")
+                st.markdown(f"{idx}. {factor['Factor']}: {factor['Description']}")
 
             # Return the factors DataFrame for future use
             return factors_df
