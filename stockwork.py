@@ -92,27 +92,34 @@ def assign_ratings_and_importance(factors_df):
     """
     st.header("Step 2: Automatically Assign Ratings, Confidence Levels, and Importance")
     factor_list = factors_df['Factor'].tolist()
+    descriptions = factors_df['Description'].tolist()
+
     ratings = []
     confidence_levels = []
-    importance_values = []
-    total_pennies = 100
 
-    for factor in factor_list:
-        # Placeholder logic for assigning ratings, confidence, and importance
-        rating = "Neutral"
-        confidence = 75
-        importance = total_pennies // len(factor_list)
-        total_pennies -= importance
+    for description in descriptions:
+        # Sentiment-based rating logic
+        if any(word in description.lower() for word in ["increase", "growth", "profit"]):
+            rating = "Positive"
+        elif any(word in description.lower() for word in ["slightly positive", "moderate growth"]):
+            rating = "Slightly Positive"
+        elif any(word in description.lower() for word in ["slightly negative", "moderate decline"]):
+            rating = "Slightly Negative"
+        elif any(word in description.lower() for word in ["decline", "loss", "decrease"]):
+            rating = "Negative"
+        else:
+            rating = "Neutral"
+
+        # Placeholder confidence level (can be improved later)
+        confidence = 75 if rating != "Neutral" else 50
 
         ratings.append(rating)
         confidence_levels.append(confidence)
-        importance_values.append(importance)
 
     return pd.DataFrame({
         "Factor": factor_list,
         "Rating": ratings,
-        "Confidence (%)": confidence_levels,
-        "Importance (pennies)": importance_values
+        "Confidence (%)": confidence_levels
     })
 
 # Step 6: Display Factors Table and Visualization Placeholder
