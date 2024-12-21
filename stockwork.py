@@ -68,9 +68,6 @@ def generate_stock_summary(stock_name):
                     else:
                         factors_list.append({"Factor": factor.strip(), "Description": "No description available."})
 
-            # Order factors by importance (placeholder logic - actual ranking can be added based on additional analysis)
-            factors_list = sorted(factors_list, key=lambda x: len(x['Description']), reverse=True)
-
             # Store factors in a pandas DataFrame
             factors_df = pd.DataFrame(factors_list)
             st.write(factors_df)
@@ -88,59 +85,13 @@ def generate_stock_summary(stock_name):
             st.error(f"Error retrieving factors from OpenAI API: {e}")
             return pd.DataFrame()
 
-# Step 5: Automatically Generate Factors
-def generate_factors(stock_name, duration):
-    """
-    Generates factors for predicting the stock price based on user inputs.
-    """
-    st.header("Step 2: Identify Additional Factors")
-    st.markdown(f"Identifying additional key factors for predicting the stock price of {stock_name} over {duration} year(s).")
-
-    # Retrieve stock data using yfinance
-    stock = yf.Ticker(stock_name)
-    try:
-        stock_info = stock.info
-        sector = stock_info.get("sector", "Unknown Sector")
-    except Exception as e:
-        st.error("Unable to retrieve stock information. Please check the stock ticker symbol.")
-        return []
-
-    # Generate factors based on the duration and stock characteristics
-    if duration <= 1:
-        factor_list = [
-            "Quarterly Earnings Reports",
-            "Market Sentiment",
-            "Competitor Performance",
-            "Short-term Economic Indicators",
-            "Recent Product Launches"
-        ]
-    else:
-        factor_list = [
-            "Long-term Industry Trends",
-            "Product Innovation and R&D",
-            "Market Expansion Strategies",
-            "Economic Cycles",
-            "Regulatory Environment",
-            "Competitive Landscape",
-            "Company Financial Health"
-        ]
-
-    # Customize factors based on sector
-    if sector == "Technology":
-        factor_list.append("Adoption of New Technologies")
-    elif sector == "Healthcare":
-        factor_list.append("Regulatory Approvals and R&D Breakthroughs")
-    elif sector == "Financial Services":
-        factor_list.append("Interest Rate Changes and Regulatory Policies")
-
-    return factor_list
-
-# Step 6: Assign Ratings, Confidence Levels, and Importance Automatically
-def assign_ratings_and_importance(factor_list, duration):
+# Step 5: Assign Ratings, Confidence Levels, and Importance Automatically
+def assign_ratings_and_importance(factors_df):
     """
     Assigns ratings, confidence levels, and importance values to factors.
     """
-    st.header("Step 3: Automatically Assign Ratings, Confidence Levels, and Importance")
+    st.header("Step 2: Automatically Assign Ratings, Confidence Levels, and Importance")
+    factor_list = factors_df['Factor'].tolist()
     ratings = []
     confidence_levels = []
     importance_values = []
@@ -164,36 +115,36 @@ def assign_ratings_and_importance(factor_list, duration):
         "Importance (pennies)": importance_values
     })
 
-# Step 7: Display Factors Table and Visualization Placeholder
+# Step 6: Display Factors Table and Visualization Placeholder
 def display_factors_table(factors_table):
     """
     Displays the factors table and visualizes importance and confidence levels.
     """
-    st.header("Step 4: Factors Table")
+    st.header("Step 3: Factors Table")
     st.write(factors_table)
 
     # Placeholder for visualization
-    st.header("Step 5: Visualization of Factors")
+    st.header("Step 4: Visualization of Factors")
     st.markdown("Visualize the importance and confidence levels of the factors.")
     # Visualization will be added later
 
-# Step 8: Critique and Analysis Placeholder
+# Step 7: Critique and Analysis Placeholder
 def critique_analysis(factors_table):
     """
     Allows the user to critique and make adjustments to the factors.
     """
-    st.header("Step 6: Critique the Analysis")
+    st.header("Step 5: Critique the Analysis")
     st.markdown("Review the table and make adjustments if needed.")
     # Display an editable version of the factors table
     edited_table = st.dataframe(factors_table)
     return edited_table
 
-# Step 9: Make a Prediction Placeholder
+# Step 8: Make a Prediction Placeholder
 def make_prediction(stock_name, duration):
     """
     Allows the user to input a prediction for the annualized rate of return.
     """
-    st.header("Step 7: Make a Prediction")
+    st.header("Step 6: Make a Prediction")
     st.markdown("Based on the data in the table, make a prediction for the annualized rate of return.")
     predicted_return = st.number_input(
         "Enter your prediction for the annualized rate of return (%):",
@@ -211,10 +162,8 @@ def main():
     stock_name, duration = get_user_inputs()
     if stock_name:
         factors_df = generate_stock_summary(stock_name)
-        additional_factors = generate_factors(stock_name, duration)
-        if additional_factors:
-            factors_df = pd.concat([factors_df, pd.DataFrame({"Factor": additional_factors})], ignore_index=True)
-            factors_table = assign_ratings_and_importance(factors_df["Factor"].tolist(), duration)
+        if not factors_df.empty:
+            factors_table = assign_ratings_and_importance(factors_df)
             display_factors_table(factors_table)
             edited_table = critique_analysis(factors_table)
             make_prediction(stock_name, duration)
