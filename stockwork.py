@@ -51,22 +51,21 @@ def fetch_stock_data(ticker):
 # Step 5: Analysis and Visualization
 def analyze_stock_data(stock_data):
     """
-    Analyzes and visualizes stock data.
+    Analyzes and visualizes stock data in the original format.
     """
     if stock_data is not None:
+        # Original visualization - line chart of closing prices
         st.line_chart(stock_data["Close"], use_container_width=True)
-        st.write("Data Summary:")
 
-        # Format and display the data
-        formatted_data = stock_data.copy()
-        formatted_data.index = formatted_data.index.strftime("%Y-%m-%d")  # Format dates
-        formatted_data = formatted_data.round(2)  # Round numeric values
-        st.dataframe(formatted_data)
+        # Display key summary statistics inline rather than as a full table
+        st.markdown("### Key Statistics:")
+        st.write(f"**Mean Closing Price:** {stock_data['Close'].mean():.2f}")
+        st.write(f"**Maximum Closing Price:** {stock_data['Close'].max():.2f}")
+        st.write(f"**Minimum Closing Price:** {stock_data['Close'].min():.2f}")
 
-        # Highlight statistics
-        stats = stock_data.describe().round(2)
-        st.write("Descriptive Statistics:")
-        st.dataframe(stats.style.highlight_max(axis=0))
+        # Add key trends or indicators inline as needed
+        st.markdown("---")
+        st.write("For detailed analysis, consider examining specific timeframes.")
     else:
         st.warning("No data available for analysis.")
 
@@ -83,4 +82,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
