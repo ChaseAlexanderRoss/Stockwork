@@ -89,6 +89,11 @@ def generate_stock_summary(stock_name):
 def assign_ratings_and_importance(factors_df):
     """
     Assigns ratings, confidence levels, and importance values to factors.
+
+    Future Enhancement:
+    - Incorporate Natural Language Processing (NLP) techniques to dynamically analyze descriptions for confidence scoring.
+    - NLP could identify contextual nuances or conflicting signals in descriptions to refine confidence calculations.
+    - Libraries like TextBlob, spaCy, or OpenAI GPT can assist with more robust implementations.
     """
     st.header("Step 2: Automatically Assign Ratings, Confidence Levels, and Importance")
     factor_list = factors_df['Factor'].tolist()
@@ -110,8 +115,29 @@ def assign_ratings_and_importance(factors_df):
         else:
             rating = "Neutral"
 
-        # Placeholder confidence level (can be improved later)
-        confidence = 75 if rating != "Neutral" else 50
+        # Calculate confidence based on consistency of descriptions
+        sentiment_scores = []
+        if "increase" in description or "growth" in description:
+            sentiment_scores.append(1)
+        elif "slightly positive" in description:
+            sentiment_scores.append(0.5)
+        elif "slightly negative" in description:
+            sentiment_scores.append(-0.5)
+        elif "decline" in description or "loss" in description:
+            sentiment_scores.append(-1)
+        else:
+            sentiment_scores.append(0)
+
+        # Variance calculation for consistency
+        variance = np.var(sentiment_scores)
+
+        # Assign confidence based on variance
+        if variance < 0.2:
+            confidence = 90
+        elif variance < 0.5:
+            confidence = 75
+        else:
+            confidence = 50
 
         ratings.append(rating)
         confidence_levels.append(confidence)
