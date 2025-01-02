@@ -48,9 +48,9 @@ def generate_stock_summary(stock_name):
                 f"Identify the key factors influencing the stock price of {stock_name}. Include aspects such as financial performance, market trends, industry news, economic indicators, regulatory changes, and any other relevant information."
             )
 
-            # Use the new gpt-4o model for the API call
+            # Use the new gpt-4o-mini model for the API call
             response = client.chat.completions.create(
-                model="gpt-4o",
+                model="gpt-4o-mini",
                 messages=[
                     {"role": "user", "content": prompt}
                 ],
