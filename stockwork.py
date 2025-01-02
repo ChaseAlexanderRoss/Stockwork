@@ -54,7 +54,7 @@ def generate_stock_summary(stock_name):
                 messages=[
                     {"role": "user", "content": prompt}
                 ],
-                max_completion_tokens=5000,
+                max_completion_tokens=300,
                 temperature=0.7
             )
 
