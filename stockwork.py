@@ -82,9 +82,9 @@ def generate_stock_summary(stock_name):
             # Display the original prompt and response
             st.header("Original ChatGPT Prompt and Response")
             st.subheader("Prompt")
-            st.code(prompt, language="text")
+            st.text(prompt)
             st.subheader("Response")
-            st.code(factors_text, language="text")
+            st.text(factors_text)
 
             # Return the factors DataFrame for future use
             return factors_df
