@@ -10,7 +10,7 @@ try:
 except ModuleNotFoundError:
     st.error("Please install the required library: openai.")
     raise
-#ikjnsadf
+
 
 
 # Set OpenAI API Key (replace with your actual API key)
@@ -78,6 +78,13 @@ def generate_stock_summary(stock_name):
             st.markdown("Below are the key factors influencing the stock price of the company, listed in order of importance:")
             for idx, factor in enumerate(factors_list, start=1):
                 st.markdown(f"{idx}. {factor['Factor']}: {factor['Description']}")
+
+            # Display the original prompt and response
+            st.header("Original ChatGPT Prompt and Response")
+            st.subheader("Prompt")
+            st.code(prompt, language="text")
+            st.subheader("Response")
+            st.code(factors_text, language="text")
 
             # Return the factors DataFrame for future use
             return factors_df
