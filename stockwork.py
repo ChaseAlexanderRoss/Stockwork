@@ -45,7 +45,7 @@ def generate_stock_summary(stock_name):
         try:
             # Construct the prompt to retrieve key factors influencing the stock price
             prompt = (
-                f"Identify the key factors influencing the stock price of {stock_name}. Include aspects such as financial performance, market trends, industry news, economic indicators, regulatory changes, and any other relevant information."
+                f"Identify a single key factor influencing the stock price of {stock_name}. Include any relevant information pertaining to the single factor."
             )
 
             # Use the new gpt-4o-mini model for the API call
@@ -96,12 +96,7 @@ def generate_stock_summary(stock_name):
 # Step 5: Assign Ratings, Confidence Levels, and Importance Automatically
 def assign_ratings_and_importance(factors_df):
     """
-    Assigns ratings, confidence levels, and importance values to factors.
-
-    Future Enhancement:
-    - Incorporate Natural Language Processing (NLP) techniques to dynamically analyze descriptions for confidence scoring.
-    - NLP could identify contextual nuances or conflicting signals in descriptions to refine confidence calculations.
-    - Libraries like TextBlob, spaCy, or OpenAI GPT can assist with more robust implementations.
+    Assigns ratings, confidence levels, and importance values to factors by feeding the factor description back to ChatGPT.
     """
     st.header("Step 2: Automatically Assign Ratings, Confidence Levels, and Importance")
     factor_list = factors_df['Factor'].tolist()
@@ -111,44 +106,43 @@ def assign_ratings_and_importance(factors_df):
     confidence_levels = []
 
     for description in descriptions:
-        # Sentiment-based rating logic
-        if any(word in description.lower() for word in ["increase", "growth", "profit"]):
-            rating = "Positive"
-        elif any(word in description.lower() for word in ["slightly positive", "moderate growth"]):
-            rating = "Slightly Positive"
-        elif any(word in description.lower() for word in ["slightly negative", "moderate decline"]):
-            rating = "Slightly Negative"
-        elif any(word in description.lower() for word in ["decline", "loss", "decrease"]):
-            rating = "Negative"
-        else:
-            rating = "Neutral"
+        try:
+            # Construct the prompt to get rating and confidence for the factor
+            prompt = (
+                f"Take the following factor description and assign a rating (Very Positive, Positive, Neutral, Negative, Very Negative) to the description based on how that description would predict a stock to trend. Also, assign a confidence level (0-100%) based on the description, deciding how likely it is that the description is accurate to real life and how likely the prediction is to be true.\n\n"
+                f"Description: {description}\n\n"
+                f"Provide the response in the format: Rating: <rating>, Confidence: <confidence>%"
+            )
 
-        # Calculate confidence based on consistency of descriptions
-        sentiment_scores = []
-        if "increase" in description or "growth" in description:
-            sentiment_scores.append(1)
-        elif "slightly positive" in description:
-            sentiment_scores.append(0.5)
-        elif "slightly negative" in description:
-            sentiment_scores.append(-0.5)
-        elif "decline" in description or "loss" in description:
-            sentiment_scores.append(-1)
-        else:
-            sentiment_scores.append(0)
+            # Use the new gpt-4o-mini model for the API call
+            response = client.chat.completions.create(
+                model="gpt-4o-mini",
+                messages=[
+                    {"role": "user", "content": prompt}
+                ],
+                max_completion_tokens=100,
+                temperature=0.7
+            )
 
-        # Variance calculation for consistency
-        variance = np.var(sentiment_scores)
+            # Display the prompt and response before extracting the text
+            st.subheader("Prompt")
+            st.text(prompt)
+            st.subheader("Response")
+            st.text(response.choices[0].message.content.strip())
 
-        # Assign confidence based on variance
-        if variance < 0.2:
-            confidence = 90
-        elif variance < 0.5:
-            confidence = 75
-        else:
-            confidence = 50
+            # Extract the text response from OpenAI
+            response_text = response.choices[0].message.content.strip()
+            rating, confidence = response_text.split(", ")
+            rating = rating.split(": ")[1]
+            confidence = int(confidence.split(": ")[1].replace("%", ""))
 
-        ratings.append(rating)
-        confidence_levels.append(confidence)
+            ratings.append(rating)
+            confidence_levels.append(confidence)
+
+        except Exception as e:
+            st.error(f"Error retrieving rating and confidence from OpenAI API: {e}")
+            ratings.append("Neutral")
+            confidence_levels.append(50)
 
     return pd.DataFrame({
         "Factor": factor_list,
