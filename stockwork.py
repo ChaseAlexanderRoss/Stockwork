@@ -71,7 +71,7 @@ def generate_stock_summary(stock_name):
 
             # Store factors in a pandas DataFrame
             factors_df = pd.DataFrame(factors_list)
-            st.write(factors_df)
+            st.write(factors_df.style.set_properties(**{'white-space': 'pre-wrap'}))
 
             # Display the factors in a clear and concise manner
             st.header("Step 1: Factors Influencing Stock Price")
@@ -107,6 +107,9 @@ def assign_ratings_and_importance(factors_df):
     filtered_factors = []
 
     for factor, description in zip(factor_list, descriptions):
+        if not description or description == "No description available.":
+            continue
+
         try:
             # Construct the prompt to get rating and confidence for the factor
             prompt = (
@@ -157,7 +160,7 @@ def display_factors_table(factors_table):
     Displays the factors table and visualizes importance and confidence levels.
     """
     st.header("Step 3: Factors Table")
-    st.write(factors_table)
+    st.write(factors_table.style.set_properties(**{'white-space': 'pre-wrap'}))
 
     # Placeholder for visualization
     st.header("Step 4: Visualization of Factors")
@@ -172,7 +175,7 @@ def critique_analysis(factors_table):
     st.header("Step 5: Critique the Analysis")
     st.markdown("Review the table and make adjustments if needed.")
     # Display an editable version of the factors table
-    edited_table = st.dataframe(factors_table)
+    edited_table = st.dataframe(factors_table.style.set_properties(**{'white-space': 'pre-wrap'}))
     return edited_table
 
 # Step 8: Make a Prediction Placeholder
