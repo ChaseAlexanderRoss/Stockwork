@@ -45,7 +45,7 @@ def generate_stock_summary(stock_name):
         try:
             # Construct the prompt to retrieve key factors influencing the stock price
             prompt = (
-                f"Identify a single key factor influencing the stock price of {stock_name}. Include any relevant information pertaining to the single factor."
+                f"Identify a single key factor influencing the stock price of {stock_name}. Include any relevant information pertaining to the single factor. Please output the response starting with a short, introductory description, then the stock factor name, and then a description of the factor"
             )
 
             # Use the new gpt-4o-mini model for the API call
