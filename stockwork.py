@@ -113,7 +113,7 @@ def assign_ratings_and_importance(factors_df):
         try:
             # Construct the prompt to get rating and confidence for the factor
             prompt = (
-                f"Take the following factor description and assign a rating (Very Positive, Positive, Neutral, Negative, Very Negative) to the description based on how that description would predict a stock to trend. Also, assign a confidence level (0-100%) based on the description, deciding how likely it is that the description is accurate to real life and how likely the prediction is to be true.\n\n"
+                f"Take the following factor description and assign a rating (Very Positive, Positive, Neutral, Negative, Very Negative) to the description based on how that description would predict a stock to trend. Also, assign a confidence level (0-100%) based on the description, deciding how likely it is that the description is accurate to real life and how likely the prediction is to be true. The confidence level should be independent of the factor description. For example, if the factor is only neutral to the growth of the stock, but it is almost certainly true, then the confidence rating should be close to 100%\n\n"
                 f"Description: {description}\n\n"
                 f"Provide the response in the format: Rating: <rating>, Confidence: <confidence>%"
             )
