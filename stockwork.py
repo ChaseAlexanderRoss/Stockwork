@@ -104,8 +104,9 @@ def assign_ratings_and_importance(factors_df):
 
     ratings = []
     confidence_levels = []
+    filtered_factors = []
 
-    for description in descriptions:
+    for factor, description in zip(factor_list, descriptions):
         try:
             # Construct the prompt to get rating and confidence for the factor
             prompt = (
@@ -136,16 +137,16 @@ def assign_ratings_and_importance(factors_df):
             rating = rating.split(": ")[1]
             confidence = int(confidence.split(": ")[1].replace("%", ""))
 
-            ratings.append(rating)
-            confidence_levels.append(confidence)
+            if rating != "Neutral" or confidence != 50:
+                ratings.append(rating)
+                confidence_levels.append(confidence)
+                filtered_factors.append(factor)
 
         except Exception as e:
             st.error(f"Error retrieving rating and confidence from OpenAI API: {e}")
-            ratings.append("Neutral")
-            confidence_levels.append(50)
 
     return pd.DataFrame({
-        "Factor": factor_list,
+        "Factor": filtered_factors,
         "Rating": ratings,
         "Confidence (%)": confidence_levels
     })
