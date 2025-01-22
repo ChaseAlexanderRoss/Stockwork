@@ -160,7 +160,9 @@ def display_factors_table(factors_table):
     Displays the factors table and visualizes importance and confidence levels.
     """
     st.header("Step 3: Factors Table")
-    st.write(factors_table.style.set_properties(**{'white-space': 'pre-wrap'}))
+    st.write(factors_table.style.set_properties(**{'white-space': 'pre-wrap'}).set_table_styles(
+        [{'selector': 'th, td', 'props': [('max-width', '300px')]}]
+    ))
 
     # Placeholder for visualization
     st.header("Step 4: Visualization of Factors")
@@ -175,7 +177,9 @@ def critique_analysis(factors_table):
     st.header("Step 5: Critique the Analysis")
     st.markdown("Review the table and make adjustments if needed.")
     # Display an editable version of the factors table
-    edited_table = st.dataframe(factors_table.style.set_properties(**{'white-space': 'pre-wrap'}))
+    edited_table = st.dataframe(factors_table.style.set_properties(**{'white-space': 'pre-wrap'}).set_table_styles(
+        [{'selector': 'th, td', 'props': [('max-width', '300px')]}]
+    ))
     return edited_table
 
 # Step 8: Make a Prediction Placeholder
