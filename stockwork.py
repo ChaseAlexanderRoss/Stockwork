@@ -54,7 +54,7 @@ def generate_stock_summary(stock_name):
                 messages=[
                     {"role": "user", "content": prompt}
                 ],
-                max_completion_tokens=300,
+                max_tokens=300,
                 temperature=0.7
             )
 
@@ -124,7 +124,7 @@ def assign_ratings_and_importance(factors_df):
                 messages=[
                     {"role": "user", "content": prompt}
                 ],
-                max_completion_tokens=100,
+                max_tokens=100,
                 temperature=0.7
             )
 
@@ -176,10 +176,11 @@ def critique_analysis(factors_table):
     """
     st.header("Step 5: Critique the Analysis")
     st.markdown("Review the table and make adjustments if needed.")
-    # Display an editable version of the factors table
-    edited_table = st.dataframe(factors_table.style.set_properties(**{'white-space': 'pre-wrap'}).set_table_styles(
-        [{'selector': 'th, td', 'props': [('max-width', '300px')]}]
-    ))
+    # Display an editable version of the factors table using data_editor
+    edited_table = st.data_editor(
+        factors_table,
+        key="critique_table"
+    )
     return edited_table
 
 # Step 8: Make a Prediction Placeholder
